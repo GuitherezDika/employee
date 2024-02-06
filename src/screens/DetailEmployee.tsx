@@ -13,17 +13,20 @@ type DetailEmployeeRouteProp = RouteProp<RootStackParam, 'Detail'>;
 const DetailEmployee: React.FC = () => {
   const route = useRoute<DetailEmployeeRouteProp>();
   const navigation = useNavigation();
-  const [showModal, setShowModal] = useState(false);
+  const [showModal, setShowModal] = useState<boolean>(false);
   const {params} = route;
   const onSuccessDelete = () => {
     navigation.navigate('Home', {type: 'update'});
   };
 
-  const onDeleteData = async (id: string) => {
-    await deleteEmployee(id, onSuccessDelete);
+  const onDeleteData = async (id: string | undefined) => {
+    if (id) {
+      await deleteEmployee(id, onSuccessDelete);
+    }
   };
 
   const onHideModal = () => setShowModal(false);
+  const openModal = () => setShowModal(true);
 
   return (
     <View style={styles.container}>
@@ -43,7 +46,7 @@ const DetailEmployee: React.FC = () => {
         Update Date: {changeIsoToOriginalDate(params?.updatedDate)}
       </Text>
       <View style={styles.buttonContainer}>
-        <Button title="Edit" onPress={() => setShowModal(true)} />
+        <Button title="Edit" onPress={openModal} />
       </View>
       <View style={styles.buttonContainer}>
         <Button title="Delete" onPress={() => onDeleteData(params?.id)} />

@@ -1,4 +1,4 @@
-import React, {FC, useState} from 'react';
+import React, {FC, memo, useState} from 'react';
 import {
   Modal,
   StyleSheet,
@@ -18,115 +18,125 @@ interface ModalViewProps {
   data: Employee;
 }
 
-export const ModalView: FC<ModalViewProps> = ({showModal, hideModal, data}) => {
-  const {control, handleSubmit, setValue} = useForm<Employee>();
-  const navigation = useNavigation();
-  const [date, setDate] = useState(new Date(data.birthdate));
+export const ModalView: FC<ModalViewProps> = memo(
+  ({showModal, hideModal, data}) => {
+    const {control, handleSubmit, setValue} = useForm<Employee>();
+    const navigation = useNavigation();
+    const [date, setDate] = useState(new Date(data.birthdate));
 
-  const onChange = (event, selectedDate: any) => {
-    const currentDate = selectedDate;
-    setDate(currentDate);
-  };
+    const onChange = (event, selectedDate: any) => {
+      const currentDate = selectedDate;
+      setDate(currentDate);
+    };
 
-  const showMode = (currentMode: any) => {
-    DateTimePickerAndroid.open({
-      value: date,
-      onChange,
-      mode: currentMode,
-      is24Hour: true,
-    });
-  };
-  const showDatePicker = () => showMode('date');
+    const showMode = (currentMode: any) => {
+      DateTimePickerAndroid.open({
+        value: date,
+        onChange,
+        mode: currentMode,
+        is24Hour: true,
+      });
+    };
+    const showDatePicker = () => showMode('date');
 
-  const onSuccessUpdate = () => {
-    hideModal();
-    navigation.navigate('Home', {type: 'update'});
-  };
+    const onSuccessUpdate = () => {
+      hideModal();
+      navigation.navigate('Home', {type: 'update'});
+    };
 
-  const onSubmit = async (newData: Employee) => {
-    const currentDate = new Date();
-    newData.updatedDate = currentDate.toString();
-    newData.birthdate = date.toString();
+    const onChangeField = ({name, text}: {name: any; text: string}) => {
+      setValue(name, text);
+    };
 
-    let tempData = {...data, ...newData};
-    await updateEmployee(tempData, onSuccessUpdate);
-  };
+    const onSubmit = async (newData: Employee) => {
+      const currentDate = new Date();
+      newData.updatedDate = currentDate.toString();
+      newData.birthdate = date.toString();
 
-  return (
-    <Modal
-      visible={showModal}
-      animationType="slide"
-      transparent={true}
-      onRequestClose={hideModal}>
-      <View style={styles.centeredView}>
-        <View style={styles.modalView}>
-          <Text style={styles.title}>Edit Profile</Text>
-          <Text style={styles.subtitle}>Name:</Text>
-          <Controller
-            control={control}
-            render={({field}) => {
-              return (
-                <TextInput
-                  style={styles.input}
-                  value={field.value}
-                  onChangeText={text => setValue('fullName', text)}
-                />
-              );
-            }}
-            name="fullName"
-            defaultValue={data.fullName}
-          />
-          <Text style={styles.subtitle}>Birthdate:</Text>
-          <TouchableOpacity style={styles.input} onPress={showDatePicker}>
-            <Text style={[styles.subtitle, {fontSize: 14}]}>
-              {changeIsoToOriginalDate(date.toString())}
-            </Text>
-          </TouchableOpacity>
-          <Text style={styles.subtitle}>Address:</Text>
-          <Controller
-            control={control}
-            render={({field}) => {
-              return (
-                <TextInput
-                  style={styles.input}
-                  value={field.value}
-                  onChangeText={text => setValue('address', text)}
-                  multiline
-                />
-              );
-            }}
-            name="address"
-            defaultValue={data.address}
-          />
-          <Text style={styles.subtitle}>Salary:</Text>
-          <Controller
-            control={control}
-            render={({field}) => {
-              return (
-                <TextInput
-                  style={styles.input}
-                  value={field.value.toString()}
-                  onChangeText={text => setValue('salary', parseInt(text))}
-                  keyboardType="numeric"
-                />
-              );
-            }}
-            name="salary"
-            defaultValue={data.salary}
-          />
-          <View style={styles.row}>
-            <TouchableOpacity onPress={handleSubmit(onSubmit)}>
-              <Text style={styles.btn}>SUBMIT</Text>
+      let tempData = {...data, ...newData};
+      await updateEmployee(tempData, onSuccessUpdate);
+    };
+
+    return (
+      <Modal
+        visible={showModal}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={hideModal}>
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.title}>Edit Profile</Text>
+            <Text style={styles.subtitle}>Name:</Text>
+            <Controller
+              control={control}
+              render={({field}) => {
+                return (
+                  <TextInput
+                    style={styles.input}
+                    value={field.value}
+                    onChangeText={text =>
+                      onChangeField({name: 'fullName', text})
+                    }
+                  />
+                );
+              }}
+              name="fullName"
+              defaultValue={data.fullName}
+            />
+            <Text style={styles.subtitle}>Birthdate:</Text>
+            <TouchableOpacity style={styles.input} onPress={showDatePicker}>
+              <Text style={[styles.subtitle, {fontSize: 14}]}>
+                {changeIsoToOriginalDate(date.toString())}
+              </Text>
             </TouchableOpacity>
-            <TouchableOpacity onPress={hideModal}>
-              <Text style={[styles.btn, {color: 'gray'}]}>CANCEL</Text>
-            </TouchableOpacity>
+            <Text style={styles.subtitle}>Address:</Text>
+            <Controller
+              control={control}
+              render={({field}) => {
+                return (
+                  <TextInput
+                    style={styles.input}
+                    value={field.value}
+                    onChangeText={text =>
+                      onChangeField({name: 'address', text})
+                    }
+                    multiline
+                  />
+                );
+              }}
+              name="address"
+              defaultValue={data.address}
+            />
+            <Text style={styles.subtitle}>Salary:</Text>
+            <Controller
+              control={control}
+              render={({field}) => {
+                return (
+                  <TextInput
+                    style={styles.input}
+                    value={field.value.toString()}
+                    onChangeText={text => onChangeField({name: 'salary', text})}
+                    keyboardType="numeric"
+                  />
+                );
+              }}
+              name="salary"
+              defaultValue={data.salary}
+            />
+            <View style={styles.row}>
+              <TouchableOpacity onPress={handleSubmit(onSubmit)}>
+                <Text style={styles.btn}>SUBMIT</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={hideModal}>
+                <Text style={[styles.btn, {color: 'gray'}]}>CANCEL</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
-    </Modal>
-  );
-};
+      </Modal>
+    );
+  },
+);
 
 const styles = StyleSheet.create({
   centeredView: {

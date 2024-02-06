@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   View,
   Text,
@@ -33,22 +33,28 @@ const HomeScreen: React.FC = () => {
     navigation.navigate('Create');
   };
 
-  const renderItem = ({item}: {item: Employee}) => {
-    return (
-      <TouchableOpacity onPress={() => onNavigate(item)} style={styles.card}>
-        <Text>Name: {item.fullName}</Text>
-        <Text>NIK: {item.NIK}</Text>
-        <Text>Address: {item.address}</Text>
-      </TouchableOpacity>
-    );
-  };
+  const renderItem = useCallback(
+    ({item}: {item: Employee}) => {
+      return (
+        <TouchableOpacity onPress={() => onNavigate(item)} style={styles.card}>
+          <Text>Name: {item.fullName}</Text>
+          <Text>NIK: {item.NIK}</Text>
+          <Text>Address: {item.address}</Text>
+        </TouchableOpacity>
+      );
+    },
+    [onNavigate],
+  );
 
   useEffect(() => {
-    if (params === undefined) {
-      onSetData();
-    } else {
-      getDataAsync();
-    }
+    const fetchData = async () => {
+      if (params === undefined) {
+        onSetData();
+      } else {
+        getDataAsync();
+      }
+    };
+    fetchData();
   }, [params]);
 
   return (
@@ -56,7 +62,8 @@ const HomeScreen: React.FC = () => {
       <FlatList
         data={employeeData}
         renderItem={renderItem}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item.id.toString() || ''}
+        initialNumToRender={5}
       />
       <View style={styles.btn}>
         <Button title="Create New Page" onPress={onCreateNavigation} />

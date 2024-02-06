@@ -21,7 +21,7 @@ const CreateNewPage: React.FC = () => {
     formState: {errors},
   } = useForm<Employee>();
   const navigation = useNavigation();
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState<Date>(new Date());
 
   const onChange = (event, selectedDate: any) => {
     const currentDate = selectedDate;
@@ -39,6 +39,15 @@ const CreateNewPage: React.FC = () => {
 
   const onSuccessCreate = () => {
     navigation.navigate('Home', {type: 'update'});
+  };
+
+  const onChangeField = ({name, text}: {name: any; text: string}) => {
+    if (name === 'salary') {
+      const parseValue = parseInt(text);
+      setValue(name, parseValue);
+    } else {
+      setValue(name, text);
+    }
   };
 
   const onSubmit = (newData: Employee) => {
@@ -67,7 +76,7 @@ const CreateNewPage: React.FC = () => {
             <TextInput
               style={styles.input}
               value={field.value}
-              onChangeText={text => setValue('NIK', text)}
+              onChangeText={text => onChangeField({name: 'NIK', text})}
               keyboardType="numeric"
               maxLength={16}
             />
@@ -90,7 +99,7 @@ const CreateNewPage: React.FC = () => {
             <TextInput
               style={styles.input}
               value={field.value}
-              onChangeText={text => setValue('fullName', text)}
+              onChangeText={text => onChangeField({name: 'fullName', text})}
             />
           );
         }}
@@ -111,7 +120,7 @@ const CreateNewPage: React.FC = () => {
             <TextInput
               style={styles.input}
               value={field.value}
-              onChangeText={text => setValue('address', text)}
+              onChangeText={text => onChangeField({name: 'address', text})}
               multiline
             />
           );
@@ -127,7 +136,7 @@ const CreateNewPage: React.FC = () => {
             <TextInput
               style={styles.input}
               value={field.value.toString()}
-              onChangeText={text => setValue('salary', parseInt(text))}
+              onChangeText={text => onChangeField({name: 'salary', text})}
               keyboardType="numeric"
             />
           );
