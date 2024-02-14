@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, {useCallback, useEffect, useState} from 'react';
 import {
   View,
@@ -16,19 +17,18 @@ const HomeScreen: React.FC = () => {
   const {params} = route;
 
   const [employeeData, setEmployeeData] = useState<Employee[] | null>();
-  const getDataAsync = async () => {
-    let udpatedEmployee = await getData('employee');
-    setEmployeeData(udpatedEmployee);
-  };
   const onSetData = async () => {
     let dataEmployee: Employee[] | null = await createDummyData();
     setEmployeeData(dataEmployee);
+  };
+  const getDataAsync = async () => {
+    let udpatedEmployee = await getData('employee');
+    setEmployeeData(udpatedEmployee);
   };
 
   const onNavigate = (item: Employee) => {
     navigation.navigate('Detail', item);
   };
-
   const onCreateNavigation = () => {
     navigation.navigate('Create');
   };
