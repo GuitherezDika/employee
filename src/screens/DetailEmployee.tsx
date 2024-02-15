@@ -51,7 +51,13 @@ const DetailEmployee: React.FC = () => {
       <View style={styles.buttonContainer}>
         <Button title="Delete" onPress={() => onDeleteData(params?.id)} />
       </View>
-      <ModalView showModal={showModal} hideModal={onHideModal} data={params} />
+      {showModal && (
+        <ModalView
+          showModal={showModal}
+          hideModal={onHideModal}
+          data={params}
+        />
+      )}
     </View>
   );
 };
