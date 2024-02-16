@@ -11,7 +11,11 @@ function App(): React.JSX.Element {
     <NavigationContainer>
       <Stack.Navigator>
         <Stack.Screen name="Home" component={HomeScreen} />
-        <Stack.Screen name="Detail" component={DetailEmployee} />
+        <Stack.Screen
+          name="Detail"
+          component={DetailEmployee}
+          options={{headerShown: false}}
+        />
         <Stack.Screen name="Create" component={CreateNewPage} />
       </Stack.Navigator>
     </NavigationContainer>

@@ -1,7 +1,8 @@
 import {RouteProp, useNavigation, useRoute} from '@react-navigation/native';
-import React, {useState} from 'react';
-import {Button, StyleSheet, Text, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {Button, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {
+  Employee,
   RootStackParam,
   changeIsoToOriginalDate,
   deleteEmployee,
@@ -27,35 +28,60 @@ const DetailEmployee: React.FC = () => {
 
   const onHideModal = () => setShowModal(false);
   const openModal = () => setShowModal(true);
+  const [paramData, setParamData] = useState<Employee>();
+
+  useEffect(() => {
+    setParamData(params);
+  }, [params]);
+
+  const onSetParam = (data: Employee) => {
+    setParamData(data);
+  };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Detail Employee</Text>
-      <Text style={styles.subtitle}>Name: {params?.fullName}</Text>
-      <Text style={styles.subtitle}>Employee ID: {params?.id}</Text>
-      <Text style={styles.subtitle}>NIK: {params?.NIK}</Text>
-      <Text style={styles.subtitle}>Address: {params?.address}</Text>
-      <Text style={styles.subtitle}>
-        Birthdate: {changeIsoToOriginalDate(params?.birthdate)}
-      </Text>
-      <Text style={styles.subtitle}>Salary: {params?.salary}</Text>
-      <Text style={styles.subtitle}>
-        Entry Date: {changeIsoToOriginalDate(params?.entryDate)}
-      </Text>
-      <Text style={styles.subtitle}>
-        Update Date: {changeIsoToOriginalDate(params?.updatedDate)}
-      </Text>
+      <TouchableOpacity
+        style={{flexDirection: 'row'}}
+        onPress={onSuccessDelete}>
+        <Text style={{fontWeight: 'bold', fontSize: 20, marginRight: 16}}>
+          {'<-'}
+        </Text>
+        <Text style={[styles.title, {fontWeight: 'bold', fontSize: 20}]}>
+          Detail Employee
+        </Text>
+      </TouchableOpacity>
+      <Text style={styles.subtitle}>Name: {paramData?.fullName}</Text>
+      <Text style={styles.subtitle}>Employee ID: {paramData?.id}</Text>
+      <Text style={styles.subtitle}>NIK: {paramData?.NIK}</Text>
+      <Text style={styles.subtitle}>Address: {paramData?.address}</Text>
+      {paramData?.birthdate && (
+        <Text style={styles.subtitle}>
+          Birthdate: {changeIsoToOriginalDate(paramData?.birthdate)}
+        </Text>
+      )}
+      <Text style={styles.subtitle}>Salary: {paramData?.salary}</Text>
+      {paramData?.entryDate && (
+        <Text style={styles.subtitle}>
+          Entry Date: {changeIsoToOriginalDate(paramData?.entryDate)}
+        </Text>
+      )}
+      {paramData?.updatedDate && (
+        <Text style={styles.subtitle}>
+          Update Date: {changeIsoToOriginalDate(paramData?.updatedDate)}
+        </Text>
+      )}
       <View style={styles.buttonContainer}>
         <Button title="Edit" onPress={openModal} />
       </View>
       <View style={styles.buttonContainer}>
-        <Button title="Delete" onPress={() => onDeleteData(params?.id)} />
+        <Button title="Delete" onPress={() => onDeleteData(paramData?.id)} />
       </View>
-      {showModal && (
+      {showModal && paramData && (
         <ModalView
           showModal={showModal}
           hideModal={onHideModal}
-          data={params}
+          data={paramData}
+          setParamData={onSetParam}
         />
       )}
     </View>

@@ -16,10 +16,11 @@ interface ModalViewProps {
   showModal: boolean;
   hideModal: () => void;
   data: Employee;
+  setParamData: () => void;
 }
 
 export const ModalView: FC<ModalViewProps> = memo(
-  ({showModal, hideModal, data}) => {
+  ({showModal, hideModal, data, setParamData}) => {
     const {control, handleSubmit, setValue} = useForm<Employee>();
     const navigation = useNavigation();
     const [date, setDate] = useState(new Date(data.birthdate));
@@ -41,7 +42,7 @@ export const ModalView: FC<ModalViewProps> = memo(
 
     const onSuccessUpdate = () => {
       hideModal();
-      navigation.navigate('Home', {type: 'update'});
+      // navigation.navigate('Home', {type: 'update'});
     };
 
     const onChangeField = ({name, text}: {name: any; text: string}) => {
@@ -54,6 +55,7 @@ export const ModalView: FC<ModalViewProps> = memo(
       newData.birthdate = date.toString();
 
       let tempData = {...data, ...newData};
+      setParamData(tempData);
       await updateEmployee(tempData, onSuccessUpdate);
     };
 
